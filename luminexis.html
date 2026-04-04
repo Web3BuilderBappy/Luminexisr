@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Luminexis</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--g:#E8A020;--gl:#F5C842;--gd:#6B4A0E;--bg:#060504;--bg3:#141008;--card:#0f0d08;--c2:#181410;--c3:#1e1a12;--b1:#1e1a10;--b2:#2a2416;--tx:#ede5cc;--t2:#6e6244;--t3:#332e1e;--grn:#22c55e;--red:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:#000;}
+body{display:flex;justify-content:center;align-items:center;font-family:'Inter',sans-serif;color:var(--tx);}
+.shell{width:390px;height:844px;background:var(--bg);border-radius:50px;border:1.5px solid #1c1810;overflow:hidden;position:relative;box-shadow:0 0 0 8px #0d0d0d,0 0 0 9px #1a1a1a,0 40px 120px rgba(232,160,32,.1);}
+.scr{display:none;flex-direction:column;height:100%;position:absolute;inset:0;background:var(--bg);}
+.scr.on{display:flex;}
+@keyframes su{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:su .3s ease both;}
+.sv{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:86px;}
+.sv::-webkit-scrollbar{display:none;}
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 6px;font-size:13px;font-weight:600;flex-shrink:0;}
+.sbar-r{display:flex;align-items:center;gap:5px;}
+.sig{display:flex;align-items:flex-end;gap:2px;}
+.sig i{display:block;background:var(--tx);border-radius:1px;width:3px;}
+.sig i:nth-child(1){height:4px}.sig i:nth-child(2){height:7px}.sig i:nth-child(3){height:10px}.sig i:nth-child(4){height:13px}
+.bnav{position:absolute;bottom:0;left:0;right:0;height:80px;background:rgba(6,5,4,.97);backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;align-items:center;padding:0 6px 14px;z-index:50;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 0;}
+.ni svg{width:22px;height:22px;color:var(--t2);transition:.2s;}
+.ni span{font-size:11px;color:var(--t2);font-weight:500;transition:.2s;}
+.ni.on svg,.ni.on span{color:var(--g);}
+
+/* SPLASH */
+#spl{position:absolute;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+.spl-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(232,160,32,.15),transparent 60%);}
+.ring{position:absolute;border-radius:50%;border:1px solid rgba(232,160,32,.07);animation:rp 3s ease-in-out infinite;}
+.ring:nth-child(1){width:180px;height:180px}
+.ring:nth-child(2){width:300px;height:300px;animation-delay:.5s}
+.ring:nth-child(3){width:430px;height:430px;animation-delay:1s}
+.ring:nth-child(4){width:570px;height:570px;animation-delay:1.5s}
+@keyframes rp{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.8;transform:scale(1.04)}}
+.sl{width:86px;height:86px;z-index:2;filter:drop-shadow(0 0 36px rgba(232,160,32,.6));opacity:0;transform:scale(.65) translateY(28px);transition:opacity .85s cubic-bezier(.34,1.56,.64,1),transform .85s cubic-bezier(.34,1.56,.64,1);}
+.sl.v{opacity:1;transform:scale(1) translateY(0);}
+.sn{font-family:'Cinzel',serif;font-size:32px;color:var(--g);z-index:2;margin-top:18px;letter-spacing:2px;opacity:0;transform:translateY(14px);transition:opacity .6s ease .35s,transform .6s ease .35s;}
+.sn.v{opacity:1;transform:translateY(0);}
+.st{font-size:13px;color:var(--t2);z-index:2;margin-top:8px;opacity:0;transform:translateY(10px);transition:opacity .5s ease .55s,transform .5s ease .55s;}
+.st.v{opacity:1;transform:translateY(0);}
+.sb2{width:160px;height:2px;background:var(--b1);border-radius:1px;z-index:2;margin-top:60px;overflow:hidden;opacity:0;transition:opacity .4s ease .65s;}
+.sb2.v{opacity:1;}
+.sf{height:100%;background:linear-gradient(90deg,transparent,var(--g),transparent);width:0%;}
+.sf.run{animation:lf 2.2s ease .8s forwards;}
+@keyframes lf{0%{width:0}80%{width:95%}100%{width:100%}}
+.sm{font-size:12px;color:var(--t2);z-index:2;margin-top:14px;opacity:0;transition:opacity .4s ease .75s;}
+.sm.v{opacity:1;}
+.sdots{display:flex;gap:6px;z-index:2;margin-top:10px;opacity:0;transition:opacity .3s ease 1s;}
+.sdots.v{opacity:1;}
+.sdots span{width:5px;height:5px;border-radius:50%;background:#2a2416;animation:dp 1.4s infinite;}
+.sdots span:nth-child(2){animation-delay:.2s}.sdots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,100%{background:#2a2416}50%{background:var(--g)}}
+
+/* ONBOARD */
+#s-ob{justify-content:flex-end;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(232,160,32,.1),transparent 55%),var(--bg);}
+.ob-top{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px 28px;}
+.ob-lw{width:100px;height:100px;position:relative;margin-bottom:22px;}
+.ob-gl{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(232,160,32,.18),transparent 70%);animation:gp 2.5s ease-in-out infinite;}
+@keyframes gp{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+.ob-lg{width:100%;height:100%;filter:drop-shadow(0 0 22px rgba(232,160,32,.5));}
+.ob-ti{font-family:'Cinzel',serif;font-size:36px;color:var(--g);letter-spacing:1px;margin-bottom:8px;}
+.ob-su{font-size:13px;color:var(--t2);text-align:center;line-height:1.7;max-width:240px;}
+.ob-bt{padding:22px 22px 36px;background:linear-gradient(to top,rgba(14,12,8,1),rgba(14,12,8,.8) 80%,transparent);}
+.ob-sc{display:flex;gap:10px;margin-bottom:14px;}
+.soc{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;border:1px solid var(--b2);background:var(--c2);color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:.2s;}
+.soc:active{border-color:var(--g);color:var(--g);}
+.soc svg{width:16px;height:16px;flex-shrink:0;}
+.btn{width:100%;padding:15px;border:none;border-radius:14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:.15s;margin-bottom:10px;}
+.bg{background:linear-gradient(135deg,var(--g),var(--gl));color:#000;}
+.bg:active{transform:scale(.98);}
+.bo{background:var(--c2);color:var(--tx);border:1px solid var(--b2);}
+.bo:active{background:var(--c3);}
+
+/* FORM */
+.shd{display:flex;align-items:center;gap:12px;padding:14px 20px 10px;flex-shrink:0;}
+.bk{width:36px;height:36px;background:var(--c2);border:1px solid var(--b2);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.bk svg{width:18px;height:18px;color:var(--tx);}
+.sht{font-family:'Cinzel',serif;font-size:19px;color:var(--g);}
+.fb{padding:0 20px 24px;flex:1;overflow-y:auto;}
+.fb::-webkit-scrollbar{display:none;}
+.fg{margin-bottom:13px;}
+.fl{font-size:12px;color:var(--t2);margin-bottom:6px;display:block;font-weight:500;letter-spacing:.3px;}
+.fi{width:100%;background:var(--c2);border:1px solid var(--b2);border-radius:12px;padding:13px 15px;color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:.2s;}
+.fi:focus{border-color:var(--gd);}
+.fi::placeholder{color:var(--t3);}
+textarea.fi{resize:none;height:90px;line-height:1.6;}
+select.fi{cursor:pointer;appearance:none;}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0;}
+.sw{background:var(--c2);border:1px solid var(--b1);border-radius:10px;padding:9px 6px;text-align:center;}
+.sw-n{font-size:10px;color:var(--t3);margin-bottom:2px;}
+.sw-w{font-size:13px;font-weight:600;}
+.warn{background:rgba(232,160,32,.06);border:1px solid var(--gd);border-radius:12px;padding:13px;font-size:12px;color:var(--t2);line-height:1.6;margin:12px 0;}
+.warn strong{color:var(--g);}
+.cphr{background:rgba(232,160,32,.1);border:1px solid var(--gd);border-radius:8px;padding:5px 11px;color:var(--g);font-family:'Inter';font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.cphr svg{width:12px;height:12px;}
+
+/* HOME */
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 20px 10px;}
+.hw{font-size:13px;color:var(--t2);margin-bottom:1px;}
+.hb{font-family:'Cinzel',serif;font-size:28px;color:var(--g);}
+.hl{width:60px;height:60px;filter:drop-shadow(0 0 18px rgba(232,160,32,.4));}
+.bc{margin:0 14px 18px;background:linear-gradient(150deg,#181308,#0c0a05);border:1px solid var(--b2);border-radius:20px;padding:18px;position:relative;overflow:hidden;}
+.bc::before{content:'';position:absolute;top:-50%;right:-20%;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(232,160,32,.07),transparent 65%);}
+.bc-lb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);margin-bottom:6px;font-weight:500;letter-spacing:.4px;}
+.bc-dt{width:6px;height:6px;background:var(--g);border-radius:50%;animation:db 2s infinite;}
+@keyframes db{0%,100%{opacity:1}50%{opacity:.3}}
+.bc-am{font-size:36px;font-weight:700;letter-spacing:-1.5px;margin-bottom:18px;}
+.bc-rw{display:flex;gap:9px;}
+.bbt{flex:1;padding:10px;border-radius:12px;border:1px solid var(--b2);background:rgba(255,255,255,.03);color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.2s;}
+.bbt:active{background:rgba(232,160,32,.08);}
+.bbt svg{width:14px;height:14px;}
+.sh{display:flex;justify-content:space-between;align-items:center;padding:0 18px 11px;}
+.sh h3{font-size:15px;font-weight:600;}
+.sd{display:flex;gap:3px;}
+.sd span{width:4px;height:4px;background:var(--t2);border-radius:50%;}
+.qa{display:flex;gap:9px;padding:0 14px 18px;}
+.qab{flex:1;background:var(--c2);border:1px solid var(--b1);border-radius:18px;padding:16px 6px 13px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:pointer;transition:.2s;}
+.qab:active{transform:scale(.97);}
+.qi{width:48px;height:48px;background:rgba(232,160,32,.1);border-radius:14px;display:flex;align-items:center;justify-content:center;}
+.qi svg{width:24px;height:24px;color:var(--g);}
+.ql{font-size:13px;font-weight:500;}
+.ml{padding:0 14px 8px;display:flex;flex-direction:column;gap:5px;}
+.mi{display:flex;align-items:center;padding:11px 12px;background:var(--card);border-radius:15px;cursor:pointer;transition:.15s;border:1px solid transparent;}
+.mi:active{border-color:var(--b2);background:var(--c2);}
+.ci{width:38px;height:38px;border-radius:50%;margin-right:11px;flex-shrink:0;overflow:hidden;background:var(--c2);}
+.ci img{width:100%;height:100%;object-fit:cover;}
+.cn{font-size:14px;font-weight:600;}
+.cc{font-size:11px;margin-top:1px;}
+.cp{text-align:right;margin-right:9px;}
+.cpv{font-size:14px;font-weight:600;}
+.cpp{font-size:11px;margin-top:1px;}
+.mbg{padding:5px 9px;border-radius:8px;font-size:12px;font-weight:700;min-width:58px;text-align:center;display:flex;align-items:center;justify-content:center;gap:3px;}
+.mbg svg{width:10px;height:10px;}
+.mbu{background:rgba(34,197,94,.1);color:var(--grn);}
+.mbd{background:rgba(239,68,68,.1);color:var(--red);}
+.pos{color:var(--grn)}.neg{color:var(--red)}
+
+/* MARKETS */
+.srch{margin:6px 14px 12px;background:var(--c2);border:1px solid var(--b2);border-radius:13px;display:flex;align-items:center;gap:9px;padding:11px 14px;}
+.srch svg{width:16px;height:16px;color:var(--t2);flex-shrink:0;}
+.srch input{background:none;border:none;outline:none;color:var(--tx);font-family:'Inter';font-size:14px;flex:1;}
+.srch input::placeholder{color:var(--t3);}
+.mt2{display:flex;gap:7px;padding:0 14px 12px;overflow-x:auto;}
+.mt2::-webkit-scrollbar{display:none;}
+.mt{padding:6px 15px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid var(--b2);background:var(--c2);color:var(--t2);transition:.2s;flex-shrink:0;}
+.mt.on{background:var(--g);color:#000;border-color:var(--g);}
+.mcs{width:64px;height:32px;margin-right:10px;flex-shrink:0;}
+
+/* SWAP */
+.swc{margin:0 14px 10px;background:var(--c2);border:1px solid var(--b1);border-radius:18px;padding:15px;}
+.swl{font-size:11px;color:var(--t2);font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:9px;}
+.swr{display:flex;align-items:center;gap:10px;}
+.stb{display:flex;align-items:center;gap:7px;background:rgba(232,160,32,.1);border:1px solid var(--gd);border-radius:12px;padding:9px 11px;cursor:pointer;font-weight:600;font-size:14px;white-space:nowrap;}
+.stb img{width:22px;height:22px;border-radius:50%;background:var(--card);}
+.stb svg{width:12px;height:12px;color:var(--t2);}
+.sai{flex:1;background:none;border:none;outline:none;color:var(--tx);font-family:'Inter';font-size:22px;font-weight:700;text-align:right;min-width:0;}
+.sarr{width:42px;height:42px;margin:6px auto;background:var(--c2);border:1.5px solid var(--b2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.35s;}
+.sarr:active{transform:rotate(180deg);}
+.sarr svg{width:20px;height:20px;color:var(--g);}
+.sinf{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:11px 13px;margin:0 14px 14px;}
+.sr3{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);padding:3px 0;}
+.sr3 span:last-child{color:var(--tx);font-weight:500;}
+
+/* WALLET */
+.wad{margin:0 14px 14px;background:var(--c2);border:1px solid var(--b2);border-radius:16px;padding:14px;display:flex;align-items:center;justify-content:space-between;}
+.wal{font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:500;letter-spacing:.5px;}
+.wav{font-size:13px;font-family:monospace;}
+.cpb{background:rgba(232,160,32,.1);border:1px solid var(--gd);border-radius:8px;padding:6px 12px;color:var(--g);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter';}
+.ai{display:flex;align-items:center;padding:12px;margin:0 14px 5px;background:var(--card);border-radius:14px;cursor:pointer;transition:.15s;}
+.ai:active{background:var(--c2);}
+.ain{font-size:14px;font-weight:600;}
+.aia{font-size:11px;color:var(--t2);margin-top:1px;}
+.aiv{text-align:right;margin-left:auto;}
+.aiu{font-size:14px;font-weight:600;}
+.aip{font-size:11px;margin-top:1px;}
+
+/* DETAIL */
+.cc2{margin:0 14px 14px;background:var(--c2);border:1px solid var(--b1);border-radius:18px;padding:15px;}
+.ch-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.ch-cn{display:flex;align-items:center;gap:10px;}
+.ch-cn img{width:34px;height:34px;border-radius:50%;}
+.ch-sym{font-size:16px;font-weight:700;}
+.ch-nm{font-size:11px;color:var(--t2);margin-top:1px;}
+.ch-px{font-size:22px;font-weight:700;}
+.ch-ch{font-size:12px;margin-top:2px;}
+.cctl{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:6px;}
+.ctg{display:flex;gap:4px;}
+.ct{padding:5px 10px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--t2);transition:.15s;font-family:'Inter';display:flex;align-items:center;gap:3px;}
+.ct svg{width:12px;height:12px;}
+.ct.on{background:rgba(232,160,32,.12);border-color:var(--gd);color:var(--g);}
+.tvbox{border-radius:12px;overflow:hidden;background:#0f0d08;}
+
+/* MODAL */
+.mo{position:absolute;inset:0;background:rgba(0,0,0,.8);display:none;align-items:flex-end;z-index:100;backdrop-filter:blur(8px);}
+.mo.open{display:flex;}
+.ms{width:100%;background:var(--bg3);border-radius:26px 26px 0 0;border-top:1px solid var(--b2);padding:20px 20px 36px;animation:ms-up .3s ease;}
+@keyframes ms-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:0 auto 18px;}
+.mtt{font-family:'Cinzel',serif;font-size:17px;color:var(--g);margin-bottom:16px;}
+.qr{width:130px;height:130px;margin:0 auto 14px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.ab{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:11px;font-family:monospace;font-size:11px;color:var(--t2);text-align:center;word-break:break-all;margin-bottom:12px;line-height:1.6;}
+.topt{display:flex;align-items:center;gap:11px;padding:11px;border-radius:12px;cursor:pointer;transition:.15s;margin-bottom:4px;}
+.topt:active{background:var(--c2);}
+.topt img{width:34px;height:34px;border-radius:50%;}
+.ton{font-size:14px;font-weight:600;}
+.tos{font-size:11px;color:var(--t2);margin-top:1px;}
+.top2{margin-left:auto;font-size:13px;color:var(--t2);}
+
+/* LOADING */
+.ld{position:absolute;inset:0;background:rgba(6,5,4,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:16px;}
+.ld.hd{display:none;}
+.sp{width:48px;height:48px;border:2px solid var(--b2);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-t{font-family:'Cinzel',serif;font-size:16px;color:var(--g);}
+.ld-s{font-size:12px;color:var(--t2);}
+.ld-bar{width:148px;height:2px;background:var(--b1);border-radius:1px;overflow:hidden;}
+.lf{height:100%;background:linear-gradient(90deg,var(--g),var(--gl));width:0%;border-radius:1px;transition:width .3s ease;}
+
+/* TOAST */
+.tst{position:absolute;bottom:96px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--c3);border:1px solid var(--b2);border-radius:12px;padding:11px 18px;color:var(--tx);font-size:13px;font-weight:500;opacity:0;transition:.25s;pointer-events:none;z-index:400;white-space:nowrap;display:flex;align-items:center;gap:8px;box-shadow:0 8px 40px rgba(0,0,0,.6);}
+.tst svg{width:15px;height:15px;flex-shrink:0;}
+.tst.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.p14{padding:0 14px;}
+.row{display:flex;gap:9px;margin-bottom:14px;}
+.mt8{margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SPLASH -->
+<div id="spl">
+  <div class="spl-bg"></div>
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+  </div>
+  <img src="https://i.postimg.cc/fR86YCt5/20260402-205538-removebg-preview.png" class="sl" id="sL">
+  <div class="sn" id="sN">Luminexis</div>
+  <div class="st" id="sT">Decentralized. Secure. Yours.</div>
+  <div class="sb2" id="sB"><div class="sf" id="sF"></div></div>
+  <div class="sm" id="sM">Initializing</div>
+  <div class="sdots" id="sD"><span></span><span></span><span></span></div>
+</div>
+
+<!-- IN-APP LOADING -->
+<div class="ld hd" id="ld">
+  <img src="https://i.postimg.cc/fR86YCt5/20260402-205538-removebg-preview.png" style="width:58px;filter:drop-shadow(0 0 20px rgba(232,160,32,.5))">
+  <div class="sp"></div>
+  <div class="ld-t" id="ld-t">Processing</div>
+  <div class="ld-s" id="ld-s">Please wait...</div>
+  <div class="ld-bar"><div class="lf" id="lf"></div></div>
+</div>
+
+<!-- TOAST -->
+<div class="tst" id="tst">
+  <svg id="tic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="tmsg"></span>
+</div>
+
+<!-- ONBOARD -->
+<div class="scr" id="s-ob">
+  <div class="ob-top">
+    <div class="ob-lw"><div class="ob-gl"></div><img src="https://i.postimg.cc/fR86YCt5/20260402-205538-removebg-preview.png" class="ob-lg"></div>
+    <div class="ob-ti">Luminexis</div>
+    <div class="ob-su">Your gateway to the decentralized world. Secure, fast, and in your control.</div>
+  </div>
+  <div class="ob-bt">
+    <div class="ob-sc">
+      <a class="soc" href="https://x.com/Luminexisr" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Twitter
+      </a>
+      <a class="soc" href="https://discord.gg/Gyf9Y9vwG" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.099.246.198.373.292a.077.077 0 01-.006.127c-.598.35-1.22.645-1.873.892a.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+        Discord
+      </a>
+    </div>
+    <button class="btn bg" onclick="go('s-cr')">Create New Wallet</button>
+    <button class="btn bo" onclick="go('s-im')">Import Existing Wallet</button>
+  </div>
+</div>
+
+<!-- CREATE -->
+<div class="scr" id="s-cr">
+  <div class="sbar"><span id="ck1">11:42</span><div class="sbar-r"><div class="sig"><i></i><i></i><i></i><i></i></div><svg width="15" height="12" viewBox="0 0 24 18" fill="var(--tx)"><path d="M12 14a2 2 0 100 4 2 2 0 000-4zm-5.6-3.8a8 8 0 0111.2 0l1.4-1.4A10 10 0 002 8.8l1.4 1.4zM12 6a12 12 0 018.5 3.5l1.4-1.4A14 14 0 002.1 8.1l1.4 1.4A12 12 0 0112 6z"/></svg></div></div>
+  <div class="shd"><div class="bk" onclick="go('s-ob')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div><div class="sht">Create Wallet</div></div>
+  <div class="fb">
+    <div class="fg"><label class="fl">Password</label><input class="fi" type="password" placeholder="Enter a strong password" id="cr-pw"></div>
+    <div class="fg"><label class="fl">Confirm Password</label><input class="fi" type="password" placeholder="Confirm password" id="cr-pw2"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <label class="fl" style="margin-bottom:0">Secret Recovery Phrase</label>
+      <button class="cphr" onclick="copySeed()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy Phrase</button>
+    </div>
+    <div class="sg" id="seed-g"></div>
+    <div class="warn"><strong>Important —</strong> Store your 12-word recovery phrase offline. Never share it. Luminexis cannot recover it.</div>
+    <button class="btn bg" onclick="doCreate()">Create Wallet</button>
+  </div>
+</div>
+
+<!-- IMPORT -->
+<div class="scr" id="s-im">
+  <div class="sbar"><span>11:42</span><div class="sbar-r"><div class="sig"><i></i><i></i><i></i><i></i></div><svg width="15" height="12" viewBox="0 0 24 18" fill="var(--tx)"><path d="M12 14a2 2 0 100 4 2 2 0 000-4zm-5.6-3.8a8 8 0 0111.2 0l1.4-1.4A10 10 0 002 8.8l1.4 1.4zM12 6a12 12 0 018.5 3.5l1.4-1.4A14 14 0 002.1 8.1l1.4 1.4A12 12 0 0112 6z"/></svg></div></div>
+  <div class="shd"><div class="bk" onclick="go('s-ob')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div><div class="sht">Import Wallet</div></div>
+  <div class="fb">
+    <div class="fg"><label class="fl">Recovery Phrase or Private Key</label><textarea class="fi" placeholder="Enter 12 or 24 word recovery phrase, or paste private key..." id="im-sd"></textarea></div>
+    <div class="fg"><label class="fl">Password</label><input class="fi" type="password" placeholder="Enter password" id="im-pw"></div>
+    <div class="fg"><label class="fl">Confirm Password</label><input class="fi" type="password" placeholder="Confirm password" id="im-pw2"></div>
+    <button class="btn bg" onclick="doImport()">Import Wallet</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="scr" id="s-hm">
+  <div class="sbar"><span id="ck">11:42</span><div class="sbar-r"><div class="sig"><i></i><i></i><i></i><i></i></div><svg width="15" height="12" viewBox="0 0 24 18" fill="var(--tx)"><path d="M12 14a2 2 0 100 4 2 2 0 000-4zm-5.6-3.8a8 8 0 0111.2 0l1.4-1.4A10 10 0 002 8.8l1.4 1.4zM12 6a12 12 0 018.5 3.5l1.4-1.4A14 14 0 002.1 8.1l1.4 1.4A12 12 0 0112 6z"/></svg></div></div>
+  <div class="sv">
+    <div class="hdr"><div><div class="hw">Welcome To</div><div class="hb">Luminexis</div></div><img src="https://i.postimg.cc/fR86YCt5/20260402-205538-removebg-preview.png" class="hl"></div>
+    <div class="bc">
+      <div class="bc-lb"><div class="bc-dt"></div>BALANCE</div>
+      <div class="bc-am">$12,450.75</div>
+      <div class="bc-rw">
+        <button class="bbt" onclick="openM('m-dep')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Deposit</button>
+        <button class="bbt" onclick="openM('m-wd')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Withdraw</button>
+      </div>
+    </div>
+    <div class="sh"><h3>Quick Actions</h3><div class="sd"><span></span><span></span><span></span></div></div>
+    <div class="qa">
+      <div class="qab" onclick="tab('sw')"><div class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div><span class="ql">Swap</span></div>
+      <div class="qab" onclick="openM('m-buy')"><div class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><span class="ql">Buy</span></div>
+      <div class="qab" onclick="notify('Browser coming soon')"><div class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div><span class="ql">Browser</span></div>
+    </div>
+    <div class="sh"><h3>Top Movers</h3><div class="sd"><span></span><span></span><span></span></div></div>
+    <div class="ml" id="hm-mv"></div>
+  </div>
+  <div class="bnav">
+    <div class="ni on" onclick="tab('hm')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></div>
+    <div class="ni" onclick="tab('mk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span>Markets</span></div>
+    <div class="ni" onclick="tab('sw')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg><span>Swap</span></div>
+    <div class="ni" onclick="tab('wl')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg><span>Wallet</span></div>
+  </div>
+</div>
+
+<!-- MARKETS -->
+<div class="scr" id="s-mk">
+  <div class="sbar"><span id="ck2">11:42</span><div class="sbar-r"><div class="sig"><i></i><i></i><i></i><i></i></div><svg width="15" height="12" viewBox="0 0 24 18" fill="var(--tx)"><path d="M12 14a2 2 0 100 4 2 2 0 000-4zm-5.6-3.8a8 8 0 0111.2 0l1.4-1.4A10 10 0 002 8.8l1.4 1.4zM12 6a12 12 0 018.5 3.5l1.4-1.4A14 14 0 002.1 8.1l1.4 1.4A12 12 0 0112 6z"/></svg></div></div>
+  <div style="padding:14px 18px 8px;font-family:'Cinzel',serif;font-size:21px;color:var(--g)">Markets</div>
+  <div class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search markets..." id="mq" oninput="fMkt()"></div>
+  <div class="mt2">
+    <div class="mt on" onclick="mTab(this,'all')">All</div>
+    <div class="mt" onclick="mTab(this,'gain')">Gainers</div>
+    <div class="mt" onclick="mTab(this,'lose')">Losers</div>
+    <div class="mt" onclick="mTab(this,'defi')">DeFi</div>
+    <div class="mt" onclick="mTab(this,'l1')">Layer 1</div>
+  </div>
+  <div class="sv" id="mk-list"></div>
+  <div class="bnav">
+    <div class="ni" onclick="tab('hm')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span>Markets</span></div>
+    <div class="ni" onclick="tab('sw')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg><span>Swap</span></div>
+    <div class="ni" onclick="tab('wl')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg><span>Wallet</span></div>
+  </div>
+</div>
+
+<!-- SWAP -->
+<div class="scr" id="s-sw">
+  <div class="sbar"><span>11:42</span><div class="sbar-r"><div class="sig"><i></i><i></i><i></i><i></i></div><svg width="15" height="12" viewBox="0 0 24 18" fill="var(--tx)"><path d="M12 14a2 2 0 100 4 2 2 0 000-4zm-5.6-3.8a8 8 0 0111.2 0l1.4-1.4A10 10 0 002 8.8l1.4 1.4zM12 6a12 12 0 018.5 3.5l1.4-1.4A14 14 0 002.1 8.1l1.4 1.4A12 12 0 0112 6z"/></svg></div></div>
+  <div style="padding:14px 18px 8px;font-family:'Cinzel',serif;font-size:21px;color:var(--g)">Swap</div>
+  <div class="sv">
+    <div class="swc">
+      <div class="swl">You Pay</div>
+      <div class="swr">
+        <div class="stb" onclick="openM('m-tf')"><img id="sf-img" src=""><span id="sf-sym">BTC</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <input class="sai" id="sf-amt" type="number" value="0.1" oninput="calcSw()">
+      </div>
+      <div style="font-size:11px;color:var(--t2);margin-top:7px">Value: $<span id="sf-usd">6,859</span></div>
+    </div>
+    <div class="sarr" onclick="flipSw()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div>
+    <div class="swc" style="margin-top:0">
+      <div class="swl">You Receive</div>
+      <div class="swr">
+        <div class="stb" onclick="openM('m-tt')"><img id="st-img" src=""><span id="st-sym">ETH</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+        <input class="sai" id="st-amt" type="number" value="3.23" readonly>
+      </div>
+      <div style="font-size:11px;color:var(--t2);margin-top:7px">Value: $<span id="st-usd">6,824</span></div>
+    </div>
+    <div class="sinf">
+      <div class="sr3"><span>Rate</span><span id="sw-rt">1 BTC = 32.3 ETH</span></div>
+      <div class="sr3"><span>Network Fee</span><span>~ $2.40</span></div>
+      <div class="sr3"><span>Price Impact</span><span style="color:var(--grn)">0.05%</span></div>
+      <div class="sr3"><span>Slippage</span><span>0.5%</span></div>
+    </div>
+    <div class="p14"><button class="btn bg" onclick="doSw()">Confirm Swap</button></div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="tab('hm')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></div>
+    <div class="ni" onclick="tab('mk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span>Markets</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg><span>Swap</span></div>
+    <div class="ni" onclick="tab('wl')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg><span>Wallet</span></div>
+  </div>
+</div>
+
+<!-- WALLET -->
+<div class="scr" id="s-wl">
+  <div class="sbar"><span>11:42</span><div class="sbar-r"><div class="sig"><i></i><i></i><i></i><i></i></div><svg width="15" height="12" viewBox="0 0 24 18" fill="var(--tx)"><path d="M12 14a2 2 0 100 4 2 2 0 000-4zm-5.6-3.8a8 8 0 0111.2 0l1.4-1.4A10 10 0 002 8.8l1.4 1.4zM12 6a12 12 0 018.5 3.5l1.4-1.4A14 14 0 002.1 8.1l1.4 1.4A12 12 0 0112 6z"/></svg></div></div>
+  <div style="padding:14px 18px 8px;font-family:'Cinzel',serif;font-size:21px;color:var(--g)">My Wallet</div>
+  <div class="sv">
+    <div class="wad"><div><div class="wal">WALLET ADDRESS</div><div class="wav" id="wad">0x1a2b...9f0e</div></div><button class="cpb" onclick="cpyAd()">Copy</button></div>
+    <div style="padding:0 14px 14px">
+      <div style="font-size:11px;color:var(--t2);margin-bottom:4px;font-weight:500;letter-spacing:.4px">TOTAL BALANCE</div>
+      <div style="font-size:32px;font-weight:700;letter-spacing:-1px">$12,450.75</div>
+      <div style="font-size:13px;color:var(--grn);margin-top:3px;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+4.2% today</div>
+    </div>
+    <div style="margin:0 14px 14px;background:var(--c2);border:1px solid var(--b1);border-radius:18px;padding:14px">
+      <div style="font-size:11px;color:var(--t2);margin-bottom:10px;font-weight:500;letter-spacing:.4px">PORTFOLIO (7D)</div>
+      <canvas id="pc" height="80"></canvas>
+    </div>
+    <div class="sh"><h3>Assets</h3><div class="sd"><span></span><span></span><span></span></div></div>
+    <div id="wl-as"></div><div style="height:10px"></div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="tab('hm')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></div>
+    <div class="ni" onclick="tab('mk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span>Markets</span></div>
+    <div class="ni" onclick="tab('sw')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg><span>Swap</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg><span>Wallet</span></div>
+  </div>
+</div>
+
+<!-- DETAIL -->
+<div class="scr" id="s-dt">
+  <div class="sbar"><span>11:42</span><div class="sbar-r"><div class="sig"><i></i><i></i><i></i><i></i></div><svg width="15" height="12" viewBox="0 0 24 18" fill="var(--tx)"><path d="M12 14a2 2 0 100 4 2 2 0 000-4zm-5.6-3.8a8 8 0 0111.2 0l1.4-1.4A10 10 0 002 8.8l1.4 1.4zM12 6a12 12 0 018.5 3.5l1.4-1.4A14 14 0 002.1 8.1l1.4 1.4A12 12 0 0112 6z"/></svg></div></div>
+  <div class="shd"><div class="bk" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></div><div class="sht" id="dt-t">Bitcoin</div></div>
+  <div class="sv">
+    <div class="cc2">
+      <div class="ch-hd">
+        <div class="ch-cn"><img id="dt-img" src=""><div><div class="ch-sym" id="dt-s"></div><div class="ch-nm" id="dt-n"></div></div></div>
+        <div style="text-align:right"><div class="ch-px" id="dt-p"></div><div class="ch-ch" id="dt-c"></div></div>
+      </div>
+      <div class="cctl">
+        <div class="ctg" id="ctypes">
+          <button class="ct on" onclick="setCT('area',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>Area</button>
+          <button class="ct" onclick="setCT('candles',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="2" x2="8" y2="22"/><rect x="5" y="6" width="6" height="10" rx="1"/><line x1="16" y1="2" x2="16" y2="22"/><rect x="13" y="8" width="6" height="8" rx="1"/></svg>Candle</button>
+        </div>
+        <div class="ctg" id="ctimes">
+          <button class="ct" onclick="setInt('60',this)">1H</button>
+          <button class="ct on" onclick="setInt('D',this)">1D</button>
+          <button class="ct" onclick="setInt('W',this)">1W</button>
+          <button class="ct" onclick="setInt('M',this)">1M</button>
+        </div>
+      </div>
+      <div class="tvbox" id="tvbox" style="height:230px"></div>
+    </div>
+    <div style="margin:0 14px 14px;background:var(--c2);border:1px solid var(--b1);border-radius:16px;padding:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><div style="font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:500;letter-spacing:.3px">MARKET CAP</div><div style="font-size:14px;font-weight:600" id="dt-mc"></div></div>
+        <div><div style="font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:500;letter-spacing:.3px">24H VOLUME</div><div style="font-size:14px;font-weight:600" id="dt-vl"></div></div>
+        <div><div style="font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:500;letter-spacing:.3px">24H HIGH</div><div style="font-size:14px;font-weight:600" id="dt-hi"></div></div>
+        <div><div style="font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:500;letter-spacing:.3px">24H LOW</div><div style="font-size:14px;font-weight:600" id="dt-lo"></div></div>
+      </div>
+    </div>
+    <div class="row p14"><button class="btn bg" style="margin:0;flex:1" onclick="openM('m-buy')">Buy</button><button class="btn bo" style="margin:0;flex:1" onclick="tab('sw')">Swap</button></div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="mo" id="m-dep" onclick="cOut(event,'m-dep')">
+  <div class="ms"><div class="mh"></div><div class="mtt">Deposit</div>
+    <div class="qr"><svg width="118" height="118" viewBox="0 0 118 118" fill="none"><rect width="118" height="118" fill="white"/><rect x="8" y="8" width="40" height="40" rx="4" fill="none" stroke="#000" stroke-width="5"/><rect x="18" y="18" width="20" height="20" fill="#000"/><rect x="70" y="8" width="40" height="40" rx="4" fill="none" stroke="#000" stroke-width="5"/><rect x="80" y="18" width="20" height="20" fill="#000"/><rect x="8" y="70" width="40" height="40" rx="4" fill="none" stroke="#000" stroke-width="5"/><rect x="18" y="80" width="20" height="20" fill="#000"/><rect x="70" y="70" width="11" height="11" fill="#000"/><rect x="86" y="70" width="11" height="11" fill="#000"/><rect x="102" y="70" width="11" height="11" fill="#000"/><rect x="70" y="86" width="11" height="11" fill="#000"/><rect x="86" y="86" width="11" height="11" fill="#000"/><rect x="102" y="102" width="11" height="11" fill="#000"/><rect x="70" y="102" width="11" height="11" fill="#000"/></svg></div>
+    <div class="ab" id="dep-ad">0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b</div>
+    <button class="btn bg" onclick="cpyAd();closeM('m-dep')">Copy Address</button>
+    <button class="btn bo mt8" onclick="closeM('m-dep')">Close</button>
+  </div>
+</div>
+<div class="mo" id="m-wd" onclick="cOut(event,'m-wd')">
+  <div class="ms"><div class="mh"></div><div class="mtt">Withdraw</div>
+    <div class="fg"><label class="fl">Recipient Address</label><input class="fi" type="text" placeholder="0x... or ENS name" id="wd-ad"></div>
+    <div class="fg"><label class="fl">Amount (USD)</label><input class="fi" type="number" placeholder="0.00" id="wd-am"></div>
+    <div style="background:var(--card);border-radius:10px;padding:11px;margin-bottom:12px"><div class="sr3"><span>Available</span><span>$12,450.75</span></div><div class="sr3"><span>Network Fee</span><span>~ $1.80</span></div></div>
+    <button class="btn bg" onclick="doWd()">Confirm Withdraw</button>
+    <button class="btn bo mt8" onclick="closeM('m-wd')">Cancel</button>
+  </div>
+</div>
+<div class="mo" id="m-buy" onclick="cOut(event,'m-buy')">
+  <div class="ms"><div class="mh"></div><div class="mtt">Buy Crypto</div>
+    <div class="fg"><label class="fl">Select Asset</label><select class="fi"><option>Bitcoin (BTC)</option><option>Ethereum (ETH)</option><option>Solana (SOL)</option><option>BNB</option></select></div>
+    <div class="fg"><label class="fl">Amount (USD)</label><input class="fi" type="number" placeholder="100"></div>
+    <div style="background:var(--card);border-radius:10px;padding:11px;margin-bottom:12px"><div class="sr3"><span>Payment</span><span>Credit / Debit Card</span></div><div class="sr3"><span>Processing Fee</span><span>2.5%</span></div></div>
+    <button class="btn bg" onclick="notify('Redirecting to payment gateway');closeM('m-buy')">Proceed to Pay</button>
+    <button class="btn bo mt8" onclick="closeM('m-buy')">Cancel</button>
+  </div>
+</div>
+<div class="mo" id="m-tf" onclick="cOut(event,'m-tf')"><div class="ms"><div class="mh"></div><div class="mtt">Select Token</div><div id="tl-f"></div></div></div>
+<div class="mo" id="m-tt" onclick="cOut(event,'m-tt')"><div class="ms"><div class="mh"></div><div class="mtt">Select Token</div><div id="tl-t"></div></div></div>
+
+<script>
+const C=[
+  {id:'btc',sym:'BTC',name:'Bitcoin',  tv:'BINANCE:BTCUSDT', img:'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',      px:68590,ch:5.6, mc:'$1.35T',vl:'$38.2B',hi:69800,lo:67100,hd:0.18, tags:['l1']},
+  {id:'eth',sym:'ETH',name:'Ethereum', tv:'BINANCE:ETHUSDT', img:'https://assets.coingecko.com/coins/images/279/small/ethereum.png',   px:2125, ch:-4.2,mc:'$255B', vl:'$14.1B',hi:2230, lo:2080, hd:2.1,  tags:['l1','defi']},
+  {id:'sol',sym:'SOL',name:'Solana',   tv:'BINANCE:SOLUSDT', img:'https://assets.coingecko.com/coins/images/4128/small/solana.png',    px:80,   ch:-6.0,mc:'$36.4B',vl:'$3.8B', hi:87,   lo:78,   hd:12.5, tags:['l1']},
+  {id:'bnb',sym:'BNB',name:'BNB',      tv:'BINANCE:BNBUSDT', img:'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png',px:615, ch:6.1, mc:'$89.2B',vl:'$2.1B', hi:622,  lo:600,  hd:3.2,  tags:['l1']},
+  {id:'ada',sym:'ADA',name:'Cardano',  tv:'BINANCE:ADAUSDT', img:'https://assets.coingecko.com/coins/images/975/small/cardano.png',    px:0.52, ch:2.3, mc:'$18.6B',vl:'$520M', hi:0.54, lo:0.51, hd:800,  tags:['l1']},
+  {id:'avax',sym:'AVAX',name:'Avalanche',tv:'BINANCE:AVAXUSDT',img:'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png',px:38,ch:-1.8,mc:'$15.7B',vl:'$680M',hi:40,lo:37,hd:25,tags:['l1','defi']},
+  {id:'dot',sym:'DOT',name:'Polkadot', tv:'BINANCE:DOTUSDT', img:'https://assets.coingecko.com/coins/images/12171/small/polkadot.png',px:8.4, ch:3.1, mc:'$12.1B',vl:'$390M', hi:8.7,  lo:8.1,  hd:60,   tags:['l1']},
+  {id:'link',sym:'LINK',name:'Chainlink',tv:'BINANCE:LINKUSDT',img:'https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png',px:14.2,ch:1.8,mc:'$8.6B',vl:'$480M',hi:14.8,lo:13.9,hd:40,tags:['defi']},
+  {id:'uni',sym:'UNI',name:'Uniswap',  tv:'BINANCE:UNIUSDT', img:'https://assets.coingecko.com/coins/images/12504/small/uni.jpg',     px:9.8,  ch:-2.1,mc:'$5.9B', vl:'$220M', hi:10.2, lo:9.5,  hd:55,   tags:['defi']},
+  {id:'matic',sym:'MATIC',name:'Polygon',tv:'BINANCE:MATICUSDT',img:'https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png',px:0.91,ch:-0.7,mc:'$8.1B',vl:'$330M',hi:0.94,lo:0.89,hd:1500,tags:['l1','defi']},
+];
+const ADDR='0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b';
+const SEED=['solar','nexus','flame','orbit','vault','prism','wave','forge','luna','cipher','storm','echo'];
+let swF='BTC',swT='ETH',prevT='hm',mktF='all',ptChart=null,curSym='BINANCE:BTCUSDT',curCT='area',curInt='D';
+
+// SPLASH
+window.addEventListener('load',()=>{
+  setTimeout(()=>{['sL','sN','sT'].forEach(id=>document.getElementById(id).classList.add('v'));},200);
+  setTimeout(()=>{['sB','sM','sD'].forEach(id=>document.getElementById(id).classList.add('v'));document.getElementById('sF').classList.add('run');},650);
+  const msgs=['Initializing','Connecting nodes','Syncing markets','Ready'];
+  let mi=0; const me=document.getElementById('sM');
+  const iv=setInterval(()=>{if(++mi<msgs.length)me.textContent=msgs[mi];},800);
+  setTimeout(()=>{
+    clearInterval(iv);
+    const s=document.getElementById('spl');
+    s.style.transition='opacity .55s ease,transform .55s ease';
+    s.style.opacity='0'; s.style.transform='scale(1.05)';
+    setTimeout(()=>{s.style.display='none';go('s-ob');},560);
+  },3400);
+});
+
+// SEED
+document.getElementById('seed-g').innerHTML=SEED.map((w,i)=>`<div class="sw"><div class="sw-n">${i+1}</div><div class="sw-w">${w}</div></div>`).join('');
+function copySeed(){if(navigator.clipboard)navigator.clipboard.writeText(SEED.join(' ')).catch(()=>{});notify('Recovery phrase copied');}
+
+// CLOCK
+function tick(){const n=new Date(),t=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;['ck','ck1','ck2'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t;});}
+tick();setInterval(tick,1000);
+
+// NAV
+function go(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  const e=document.getElementById(id); e.classList.add('on');
+  e.classList.add('anim'); setTimeout(()=>e.classList.remove('anim'),350);
+}
+function tab(t){prevT=t;go({hm:'s-hm',mk:'s-mk',sw:'s-sw',wl:'s-wl'}[t]);if(t==='mk')rMkt();if(t==='wl')iPChart();}
+function goBack(){tab(prevT==='dt'?'mk':prevT);}
+
+// HOME
+function rHome(){document.getElementById('hm-mv').innerHTML=C.slice(0,4).map(mRow).join('');}
+function mRow(c){const u=c.ch>=0;return`<div class="mi" onclick="oDet('${c.id}')"><div class="ci"><img src="${c.img}" loading="lazy"></div><div style="flex:1"><div class="cn">${c.sym}</div><div class="cc ${u?'pos':'neg'}">${u?'+':''}${c.ch}%</div></div><div class="cp"><div class="cpv">$${c.px.toLocaleString()}</div><div class="cpp ${u?'pos':'neg'}">${u?'++':'--'} ${Math.abs(c.ch)}%</div></div><div class="mbg ${u?'mbu':'mbd'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">${u?'<polyline points="18 15 12 9 6 15"/>':'<polyline points="6 9 12 15 18 9"/>'}</svg>${u?'+':''}${c.ch}</div></div>`;}
+
+// MARKETS
+function rMkt(){
+  const q=(document.getElementById('mq')||{}).value?.toLowerCase()||'';
+  let list=C.filter(c=>c.sym.toLowerCase().includes(q)||c.name.toLowerCase().includes(q));
+  if(mktF==='gain')list=list.filter(c=>c.ch>0);if(mktF==='lose')list=list.filter(c=>c.ch<0);
+  if(mktF==='defi')list=list.filter(c=>c.tags.includes('defi'));if(mktF==='l1')list=list.filter(c=>c.tags.includes('l1'));
+  document.getElementById('mk-list').innerHTML=`<div style="padding:0 14px 80px;">`+list.map((c,i)=>{const u=c.ch>=0;return`<div class="mi" style="margin-bottom:5px" onclick="oDet('${c.id}')"><div style="width:20px;font-size:12px;color:var(--t3);margin-right:6px;text-align:center">${i+1}</div><div class="ci"><img src="${c.img}" loading="lazy"></div><div style="flex:1;margin-left:10px"><div class="cn">${c.sym}</div><div style="font-size:11px;color:var(--t2)">${c.name}</div></div><canvas class="mcs" id="mc-${c.id}" width="64" height="32"></canvas><div style="text-align:right"><div class="cpv">$${c.px.toLocaleString()}</div><div class="cpp ${u?'pos':'neg'}">${u?'+':''}${c.ch}%</div></div></div>`;}).join('')+`</div>`;
+  requestAnimationFrame(()=>list.forEach(c=>{const cv=document.getElementById(`mc-${c.id}`);if(cv)dSpark(cv,c.ch>=0);}));
+}
+function dSpark(cv,up){
+  const ctx=cv.getContext('2d'),pts=[100];
+  for(let i=1;i<16;i++){const w=Math.sin(i*.7)*2.5,tr=(up?.4:-.4)*i*.08;pts.push(pts[i-1]+w+(Math.random()-.5)*1.6+tr);}
+  const mn=Math.min(...pts),rng=Math.max(...pts)-mn+.001,W=cv.width,H=cv.height;
+  const col=up?'#22c55e':'#ef4444';
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,up?'rgba(34,197,94,.35)':'rgba(239,68,68,.35)');g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.clearRect(0,0,W,H);ctx.beginPath();
+  pts.forEach((p,i)=>{const x=i*(W/(pts.length-1)),y=H-((p-mn)/rng)*(H-4)-2;i===0?ctx.moveTo(x,y):(()=>{const px=(i-1)*(W/(pts.length-1)),py=H-((pts[i-1]-mn)/rng)*(H-4)-2;ctx.bezierCurveTo((px+x)/2,py,(px+x)/2,y,x,y);})();});
+  ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.stroke();
+  ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+}
+function mTab(el,f){document.querySelectorAll('.mt').forEach(t=>t.classList.remove('on'));el.classList.add('on');mktF=f;rMkt();}
+function fMkt(){rMkt();}
+
+// DETAIL
+function oDet(id){
+  prevT=document.querySelector('.scr.on')?.id?.replace('s-','')||'mk';
+  const c=C.find(x=>x.id===id);if(!c)return;
+  curSym=c.tv;
+  document.getElementById('dt-t').textContent=c.name;
+  document.getElementById('dt-img').src=c.img;
+  document.getElementById('dt-s').textContent=c.sym;
+  document.getElementById('dt-n').textContent=c.name;
+  document.getElementById('dt-p').textContent='$'+c.px.toLocaleString();
+  const u=c.ch>=0,ce=document.getElementById('dt-c');
+  ce.textContent=`${u?'+':''}${c.ch}% (24h)`;ce.className='ch-ch '+(u?'pos':'neg');
+  document.getElementById('dt-mc').textContent=c.mc;
+  document.getElementById('dt-vl').textContent=c.vl;
+  document.getElementById('dt-hi').textContent='$'+c.hi.toLocaleString();
+  document.getElementById('dt-lo').textContent='$'+c.lo.toLocaleString();
+  document.querySelectorAll('#ctimes .ct').forEach((t,i)=>t.classList.toggle('on',i===1));
+  curInt='D';
+  go('s-dt');
+  setTimeout(loadTV,100);
+}
+
+function loadTV(){
+  const box=document.getElementById('tvbox');
+  box.innerHTML=`<iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tv_chart&symbol=${encodeURIComponent(curSym)}&interval=${curInt}&hidesidetoolbar=1&hidetoptoolbar=0&symboledit=0&saveimage=0&toolbarbg=0f0d08&studies=[]&theme=dark&style=${curCT==='candles'?'1':'3'}&timezone=Etc%2FUTC&studies_overrides={}&overrides={"paneProperties.background":"#0f0d08","paneProperties.vertGridProperties.color":"rgba(255,255,255,0.03)","paneProperties.horzGridProperties.color":"rgba(255,255,255,0.03)","mainSeriesProperties.candleStyle.upColor":"#22c55e","mainSeriesProperties.candleStyle.downColor":"#ef4444","mainSeriesProperties.candleStyle.borderUpColor":"#22c55e","mainSeriesProperties.candleStyle.borderDownColor":"#ef4444","mainSeriesProperties.candleStyle.wickUpColor":"#22c55e","mainSeriesProperties.candleStyle.wickDownColor":"#ef4444","mainSeriesProperties.lineStyle.color":"#E8A020","mainSeriesProperties.areaStyle.color1":"rgba(232,160,32,0.25)","mainSeriesProperties.areaStyle.color2":"rgba(232,160,32,0)","mainSeriesProperties.areaStyle.linecolor":"#E8A020"}&locale=en&utm_source=luminexis" style="width:100%;height:230px;border:none;" allowtransparency="true" scrolling="no"></iframe>`;
+}
+function setCT(t,el){document.querySelectorAll('#ctypes .ct').forEach(x=>x.classList.remove('on'));el.classList.add('on');curCT=t;loadTV();}
+function setInt(i,el){document.querySelectorAll('#ctimes .ct').forEach(x=>x.classList.remove('on'));el.classList.add('on');curInt=i;loadTV();}
+
+// PORTFOLIO CHART
+function iPChart(){
+  if(!document.getElementById('pc')||ptChart)return;
+  const ctx=document.getElementById('pc').getContext('2d');
+  const data=[9800,10200,10050,11400,11800,11200,12450],labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const g=ctx.createLinearGradient(0,0,0,80);g.addColorStop(0,'rgba(232,160,32,.3)');g.addColorStop(1,'rgba(0,0,0,0)');
+  ptChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data,borderColor:'#E8A020',backgroundColor:g,borderWidth:2,fill:true,tension:.5,cubicInterpolationMode:'monotone',pointRadius:3,pointBackgroundColor:'#E8A020',pointBorderColor:'#060504',pointBorderWidth:2}]},options:{responsive:true,animation:{duration:900,easing:'easeInOutQuart'},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.raw.toLocaleString()},backgroundColor:'#1a1710',titleColor:'#6e6244',bodyColor:'#ede5cc',borderColor:'#2a2416',borderWidth:1}},scales:{x:{ticks:{color:'#3a3420',font:{size:10}},grid:{display:false},border:{display:false}},y:{ticks:{color:'#3a3420',font:{size:10},callback:v=>'$'+v.toLocaleString()},grid:{color:'rgba(255,255,255,.035)'},border:{display:false}}}}});
+}
+
+// ASSETS
+function rAssets(){document.getElementById('wl-as').innerHTML=C.slice(0,6).map(c=>{const v=(c.px*c.hd).toFixed(2),u=c.ch>=0;return`<div class="ai"><div class="ci"><img src="${c.img}" loading="lazy"></div><div style="flex:1;margin-left:11px"><div class="ain">${c.sym}</div><div class="aia">${c.hd} ${c.sym}</div></div><div class="aiv"><div class="aiu">$${parseFloat(v).toLocaleString()}</div><div class="aip ${u?'pos':'neg'}">${u?'+':''}${c.ch}%</div></div></div>`;}).join('');}
+
+// SWAP
+const PX=Object.fromEntries(C.map(c=>[c.sym,c.px]));
+function setSImg(){const f=C.find(c=>c.sym===swF),t=C.find(c=>c.sym===swT);if(f){document.getElementById('sf-img').src=f.img;document.getElementById('sf-sym').textContent=f.sym;}if(t){document.getElementById('st-img').src=t.img;document.getElementById('st-sym').textContent=t.sym;}calcSw();}
+function calcSw(){const a=parseFloat(document.getElementById('sf-amt').value)||0,fp=PX[swF]||1,tp=PX[swT]||1,fu=a*fp,ta=(fu/tp*.995).toFixed(4);document.getElementById('sf-usd').textContent=Math.round(fu).toLocaleString();document.getElementById('st-amt').value=ta;document.getElementById('st-usd').textContent=Math.round(parseFloat(ta)*tp).toLocaleString();document.getElementById('sw-rt').textContent=`1 ${swF} = ${(fp/tp).toFixed(4)} ${swT}`;}
+function flipSw(){[swF,swT]=[swT,swF];setSImg();}
+function doSw(){notify(`Swapping ${document.getElementById('sf-amt').value} ${swF} → ${document.getElementById('st-amt').value} ${swT}`);}
+function bTok(){['tl-f','tl-t'].forEach(id=>{const isF=id.includes('-f');document.getElementById(id).innerHTML=C.slice(0,8).map(c=>`<div class="topt" onclick="sTok('${isF?'f':'t'}','${c.sym}');closeM('${isF?'m-tf':'m-tt'}')"><img src="${c.img}"><div><div class="ton">${c.sym}</div><div class="tos">${c.name}</div></div><div class="top2">$${c.px.toLocaleString()}</div></div>`).join('');});}
+function sTok(d,s){if(d==='f')swF=s;else swT=s;setSImg();}
+
+// ADDRESS
+function cpyAd(){if(navigator.clipboard)navigator.clipboard.writeText(ADDR).catch(()=>{});notify('Address copied to clipboard');}
+
+// MODALS
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function cOut(e,id){if(e.target.classList.contains('mo'))closeM(id);}
+
+// WALLET
+function doCreate(){const pw=document.getElementById('cr-pw').value,pw2=document.getElementById('cr-pw2').value;if(!pw){notify('Enter a password','w');return;}if(pw!==pw2){notify('Passwords do not match','w');return;}ldThen('Setting up wallet',finish);}
+function doImport(){const sd=document.getElementById('im-sd').value.trim(),pw=document.getElementById('im-pw').value,pw2=document.getElementById('im-pw2').value;if(!sd){notify('Enter recovery phrase','w');return;}if(!pw){notify('Enter a password','w');return;}if(pw!==pw2){notify('Passwords do not match','w');return;}ldThen('Importing wallet',finish);}
+function ldThen(msg,cb){
+  const l=document.getElementById('ld'),f=document.getElementById('lf');
+  document.getElementById('ld-t').textContent=msg;document.getElementById('ld-s').textContent='Securing your keys...';
+  l.classList.remove('hd');f.style.width='0%';
+  setTimeout(()=>f.style.width='65%',80);setTimeout(()=>f.style.width='100%',900);
+  setTimeout(()=>{l.classList.add('hd');cb();},1700);
+}
+function finish(){document.getElementById('wad').textContent=ADDR.slice(0,6)+'...'+ADDR.slice(-4);document.getElementById('dep-ad').textContent=ADDR;rHome();rAssets();bTok();setSImg();tab('hm');setTimeout(()=>notify('Wallet ready — welcome to Luminexis'),300);}
+function doWd(){const a=document.getElementById('wd-ad').value,b=document.getElementById('wd-am').value;if(!a){notify('Enter address','w');return;}if(!b){notify('Enter amount','w');return;}closeM('m-wd');ldThen('Broadcasting transaction',()=>notify(`Sent $${b} to ${a.slice(0,10)}...`));}
+
+// TOAST
+let tT;
+function notify(msg,type='ok'){
+  const el=document.getElementById('tst'),ic=document.getElementById('tic');
+  ic.innerHTML=type==='w'?'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>':'<polyline points="20 6 9 17 4 12"/>';
+  ic.style.color=type==='w'?'var(--g)':'var(--grn)';
+  document.getElementById('tmsg').textContent=msg;
+  el.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+rHome();rAssets();bTok();setSImg();
+</script>
+</div>
+</body>
+</html>
